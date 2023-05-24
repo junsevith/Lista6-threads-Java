@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 public class LifeController {
    private final int horCount = 10;
    private final int verCount = 10;
-   private final int interval = 10;
+   private final int interval = 100;
    private final double probability = 0.5;
    private final int threadCount = verCount * horCount;
    private final ExecutorService exec = Executors.newFixedThreadPool(threadCount, r -> {
@@ -26,7 +26,7 @@ public class LifeController {
    @FXML
    private VBox vBox;
    //   private final PaneTile[][] panes = new PaneTile[verCount][horCount];
-   private final ServiceGroup serviceGroup = new ServiceGroup(new LifeService[verCount][horCount]);
+   private final Torus torus = new Torus(new LifeService[verCount][horCount]);
 
 
    public void initialize() {
@@ -43,10 +43,10 @@ public class LifeController {
 //            pane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 //            panes[i][j] = pane;
 //            pane.setStyle("-fx-border-color: black;-fx-border-width: 2; -fx-border-insets: -2");
-            LifeService service = new LifeService(pane, i, j, serviceGroup, interval, probability);
-            serviceGroup.group[i][j] = service;
+            LifeService service = new LifeService(pane, i, j, torus, interval, probability);
+            torus.group[i][j] = service;
             service.setExecutor(exec);
-            service.setOnSucceeded(workerStateEvent -> service.pane.updateColor());
+            service.setOnSucceeded(workerStateEvent -> service.paneTile.updateColor());
             service.start();
          }
       }
@@ -63,13 +63,13 @@ public class LifeController {
       }
       if (service != null) {
          service.holdService();
-         service.pane.updateColor();
+         service.paneTile.updateColor();
       }
    }
 
    public void stageThings(Stage stage) {
       stage.setOnCloseRequest(event -> {
-         for (LifeService[] row : serviceGroup.group) {
+         for (LifeService[] row : torus.group) {
             for (LifeService service : row) {
                service.cancel();
             }

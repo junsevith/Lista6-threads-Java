@@ -1,13 +1,14 @@
 package com.example.lista6;
 
-import javafx.scene.layout.Pane;
-
-public class ServiceGroup extends Pane {
+/**
+ * Tworzy torus z arraya 2-wymiarowego
+ */
+public class Torus{
    public LifeService[][] group;
    private final int hCount;
    private final int vCount;
 
-   ServiceGroup(LifeService[][] group) {
+   Torus(LifeService[][] group) {
       this.group = group;
       vCount = group.length;
       hCount = group[0].length;
