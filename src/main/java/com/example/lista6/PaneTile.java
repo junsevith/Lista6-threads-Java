@@ -37,7 +37,7 @@ public class PaneTile extends Pane {
    }
 
    /**
-    * Zmienia widoczność obiektu {@link #indicator}
+    * Przełącza widoczność obiektu {@link #indicator}
     */
    public synchronized void indicate(){
       indicator.setVisible(!indicator.isVisible());
@@ -58,6 +58,10 @@ public class PaneTile extends Pane {
       return color;
    }
 
+   /**
+    * Ustawia pole {@link #color} na podany kolor
+    * @param color podany kolor
+    */
    public synchronized void setColor(Color color){
       this.color = color;
    }

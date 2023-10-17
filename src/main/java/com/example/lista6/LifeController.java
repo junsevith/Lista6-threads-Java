@@ -12,9 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class LifeController {
-   private final int horCount = 10;
-   private final int verCount = 10;
-   private final int interval = 100;
+   private final int horCount = 20;
+   private final int verCount = 20;
+   private final int interval = 10;
    private final double probability = 0.5;
    private final int threadCount = verCount * horCount;
    private final ExecutorService exec = Executors.newFixedThreadPool(threadCount, r -> {
@@ -25,6 +25,7 @@ public class LifeController {
 
    @FXML
    private VBox vBox;
+
    //   private final PaneTile[][] panes = new PaneTile[verCount][horCount];
    private final Torus torus = new Torus(new LifeService[verCount][horCount]);
 

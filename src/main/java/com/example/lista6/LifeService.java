@@ -34,6 +34,7 @@ public class LifeService extends ScheduledService<Color> {
    private final LifeService This = this;
    /**
     * Czy service jest aktywny
+    *
     * @see "nieaktywny service nie uruchamia task, a zamiast swojego koloru zwraca null"
     */
    private boolean active = true;
@@ -52,11 +53,12 @@ public class LifeService extends ScheduledService<Color> {
 
    /**
     * Konstruktor obiektu LifeService
-    * @param paneTile Obiekt {@link PaneTile} przypisany do service
-    * @param vIndex Pionowy numer pola
-    * @param hIndex Poziomy numer pola
-    * @param torus Obiekt {@link Torus}, do którego należy wątek
-    * @param interval Bazowy czas pomiędzy wywołaniami {@link #createTask()}
+    *
+    * @param paneTile    Obiekt {@link PaneTile} przypisany do service
+    * @param vIndex      Pionowy numer pola
+    * @param hIndex      Poziomy numer pola
+    * @param torus       Obiekt {@link Torus}, do którego należy wątek
+    * @param interval    Bazowy czas pomiędzy wywołaniami {@link #createTask()}
     * @param probability Prawdopodobieństwo zmiany koloru na losowy
     */
    public LifeService(PaneTile paneTile, int vIndex, int hIndex, Torus torus, int interval, double probability) {
@@ -74,17 +76,22 @@ public class LifeService extends ScheduledService<Color> {
       paneTile.updateColor();
    }
 
-   /** Zmienia kolor obiektu {@link #paneTile} na podany w parametrze
+   /**
+    * Zmienia kolor obiektu {@link #paneTile} na podany w parametrze
+    *
     * @param color podany kolor
     */
    public synchronized void setColor(Color color) {
 //      System.out.println("Begin set: " + this);
-      paneTile.setColor(color);
+      if (color != null) {
+         paneTile.setColor(color);
+      }
 //      System.out.println("End set  : " + this);
    }
 
    /**
     * Zwraca Kolor pola {@link #paneTile} lub {@code null} gdy service jest nieaktywny
+    *
     * @return {@link PaneTile#getColor()} pola {@link #paneTile} lub {@code null} gdy {@link #active} == false
     */
    public synchronized Color getColor() {
@@ -98,6 +105,7 @@ public class LifeService extends ScheduledService<Color> {
 
    /**
     * Zwraca losowy kolor
+    *
     * @return Losowy kolor
     */
    public Color randomColor() {
@@ -106,6 +114,7 @@ public class LifeService extends ScheduledService<Color> {
 
    /**
     * Ustawia odstęp czasu pomiędzy wywołaniami service na losowy
+    *
     * @see #setPeriod(Duration)
     */
    public void setRandomPeriod() {
@@ -115,6 +124,7 @@ public class LifeService extends ScheduledService<Color> {
 
    /**
     * Pobiera kolory aktywnych sąsiadów z obiektu {@link #torus} i zwraca średnią z tych kolorów
+    *
     * @return średni kolor sąsiadów
     * @see Torus#get(int, int)
     * @see #getColor()
@@ -141,7 +151,9 @@ public class LifeService extends ScheduledService<Color> {
             count++;
          }
       }
-      count = count == 0 ? 1 : count;
+      if (count == 0) {
+         return null;
+      }
 
       return new Color(red / count, green / count, blue / count, 1);
 
@@ -149,6 +161,7 @@ public class LifeService extends ScheduledService<Color> {
 
    /**
     * Obiekt {@link Task} uruchamiany przez service
+    *
     * @return null (pozostałość po starszej wersji)
     */
    @Override
@@ -156,29 +169,30 @@ public class LifeService extends ScheduledService<Color> {
       return new Task<>() {
          @Override
          protected Color call() throws Exception {
-//            synchronized (This) {
-            System.out.println("Start: " + This);
+            synchronized (torus) {
+               System.out.println("Start: " + This);
 
-            setRandomPeriod();
+               setRandomPeriod();
 
-            if (random.nextDouble(0, 1) < probability) {
-               setColor(randomColor());
-            } else {
-               setColor(assimilate());
-            }
+               if (random.nextDouble(0, 1) < probability) {
+                  setColor(randomColor());
+               } else {
+                  setColor(assimilate());
+               }
 
 //            Platform.runLater(() -> setColor(color));
 
-            System.out.println("End  : " + This);
+               System.out.println("End  : " + This);
 
-            return null;
-//            }
+               return null;
+            }
          }
       };
    }
 
    /**
     * Zatrzymuje i restartuje wątek
+    *
     * @see ScheduledService#cancel()
     * @see ScheduledService#restart()
     * @see PaneTile#indicate()
